@@ -1,0 +1,24 @@
+{
+  "name": "tenant-bundle-starter",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Starter template for an Aikaara per-tenant component-bundle repo. Generated repos serve <slug>-bundles for the hosted chat shell.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsc -b --noEmit"
+  },
+  "dependencies": {
+    "@aikaara/chat-sdk": "^0.8.2",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.0",
+    "vite": "^7.0.0"
+  }
+}
