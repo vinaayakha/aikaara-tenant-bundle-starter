@@ -13,18 +13,21 @@ const input = Object.fromEntries(
     .map((f) => [f.replace('.entry.tsx', ''), path.join(entriesDir, f)]),
 );
 
+// Tiny runtime polyfill prepended to every bundle. Bundles run inside
+// the shell's sandboxed iframe where Node globals don't exist; libs and
+// tenant code commonly reference `process.env`, `global`, etc. The
+// banner installs idempotent shims so every access pattern works
+// (typeof process / process.env / destructuring), not just the
+// compile-time-replaced refs that Vite's `define` would catch.
+const BUNDLE_BANNER = [
+  'window.process=window.process||{env:{NODE_ENV:"production"}};',
+  'window.global=window.global||window;',
+].join('');
+
 export default defineConfig({
   plugins: [react()],
-  // Shim Node-only globals so bundles can run inside the shell's
-  // sandboxed iframe. React and many libs reference `process.env.NODE_ENV`
-  // (and sometimes other process.env keys); Vite's IIFE build doesn't
-  // wrap things with the usual env-defines, so we have to spell them out.
-  // Tenant code that needs build-time config should use Vite's
-  // `import.meta.env.VITE_*` instead of `process.env.*`.
   define: {
     'process.env.NODE_ENV': JSON.stringify('production'),
-    'process.env': '({})',
-    global: 'window',
   },
   build: {
     outDir: 'dist',
@@ -37,6 +40,7 @@ export default defineConfig({
         entryFileNames: '[name].iife.js',
         assetFileNames: '[name][extname]',
         inlineDynamicImports: false,
+        banner: BUNDLE_BANNER,
       },
     },
   },
