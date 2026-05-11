@@ -15,6 +15,17 @@ const input = Object.fromEntries(
 
 export default defineConfig({
   plugins: [react()],
+  // Shim Node-only globals so bundles can run inside the shell's
+  // sandboxed iframe. React and many libs reference `process.env.NODE_ENV`
+  // (and sometimes other process.env keys); Vite's IIFE build doesn't
+  // wrap things with the usual env-defines, so we have to spell them out.
+  // Tenant code that needs build-time config should use Vite's
+  // `import.meta.env.VITE_*` instead of `process.env.*`.
+  define: {
+    'process.env.NODE_ENV': JSON.stringify('production'),
+    'process.env': '({})',
+    global: 'window',
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
